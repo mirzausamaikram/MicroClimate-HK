@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { weatherStore, temperature, humidity, rainfall } from '$stores/weather';
-	import { locationStore } from '$stores/location';
+	import { weatherStore, temperature, humidity, rainfall } from '../../stores/weather';
+	import { locationStore } from '../../stores/location';
 
 	let selectedFloor = 1;
 	let showVerticalProfile = false;
@@ -74,10 +74,11 @@
 	<!-- Floor Selector -->
 	<div class="mb-6">
 		<div class="flex items-center justify-between mb-2">
-			<label class="text-sm text-gray-300">Floor Level</label>
+			<label for="floor-level" class="text-sm text-gray-300">Floor Level</label>
 			<span class="text-sm font-semibold text-white">{selectedFloor}F</span>
 		</div>
 		<input
+			id="floor-level"
 			type="range"
 			min="1"
 			max="100"

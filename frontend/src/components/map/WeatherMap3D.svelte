@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { Deck } from '@deck.gl/core';
-	import { ScatterplotLayer, GridLayer } from '@deck.gl/layers';
-	import { weatherStore } from '$stores/weather';
-	import { locationStore } from '$stores/location';
-	import type { MapViewState } from '$types/weather';
+	import { ScatterplotLayer, GridCellLayer } from '@deck.gl/layers';
+	import { weatherStore } from '../../stores/weather';
+	import { locationStore } from '../../stores/location';
+	import type { MapViewState } from '../../types/weather';
 
 	let mapContainer: HTMLDivElement;
 	let deck: Deck | null = null;
@@ -63,7 +63,7 @@
 	function createLayers() {
 		return [
 			// Temperature grid layer
-			new GridLayer({
+			new GridCellLayer({
 				id: 'temperature-grid',
 				data: gridData,
 				pickable: true,
@@ -112,7 +112,7 @@
 </script>
 
 <div bind:this={mapContainer} class="w-full h-full relative">
-	<canvas class="w-full h-full" />
+	<canvas class="w-full h-full"></canvas>
 	
 	<!-- Loading overlay -->
 	{#if $weatherStore.loading}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { activeAlerts } from '$stores/weather';
+	import { activeAlerts } from '../../stores/weather';
 
 	$: criticalAlerts = $activeAlerts.filter(a => a.severity === 'danger');
 	$: warningAlerts = $activeAlerts.filter(a => a.severity === 'warning');
