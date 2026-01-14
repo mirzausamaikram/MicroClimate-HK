@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with TimescaleDB and PostGIS
+  timescaledb:
+    image: timescale/timescaledb-ha:pg14-latest
+    container_name: microclimate-db
+    environment:
+      POSTGRES_DB: microclimate_hk
+      POSTGRES_USER: microclimate
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c shared_preload_libraries=timescaledb,postgis
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U microclimate"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and real-time pub/sub
+  redis:
+    image: redis:7-alpine
+    container_name: microclimate-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Python FastAPI Backend
+  backend-api:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: microclimate-api
+    environment:
+      DATABASE_URL: postgresql://microclimate:${DB_PASSWORD:-changeme}@timescaledb:5432/microclimate_hk
+      REDIS_URL: redis://redis:6379
+      HKO_API_KEY: ${HKO_API_KEY}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend-api:/app
+      - ./ml-models:/ml-models
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Go Data Ingestion Service
+  backend-ingest:
+    build:
+      context: ./backend-ingest
+      dockerfile: Dockerfile
+    container_name: microclimate-ingest
+    environment:
+      DATABASE_URL: postgresql://microclimate:${DB_PASSWORD:-changeme}@timescaledb:5432/microclimate_hk
+      REDIS_URL: redis://redis:6379
+      WEBSOCKET_PORT: 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend-ingest:/app
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # SvelteKit Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: microclimate-frontend
+    environment:
+      PUBLIC_API_URL: http://localhost:8000
+      PUBLIC_WS_URL: ws://localhost:8001
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend-api
+      - backend-ingest
+    command: npm run dev -- --host
+
+volumes:
+  timescale-data:
+  redis-data:

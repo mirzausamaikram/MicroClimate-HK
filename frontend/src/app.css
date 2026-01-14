@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations for weather effects */
+@layer utilities {
+	.rain-particle {
+		position: absolute;
+		width: 2px;
+		height: 15px;
+		background: linear-gradient(180deg, rgba(174, 194, 224, 0) 0%, rgba(174, 194, 224, 0.8) 100%);
+		animation: rain-fall 1s linear infinite;
+	}
+
+	.cloud-particle {
+		position: absolute;
+		background: rgba(255, 255, 255, 0.6);
+		border-radius: 50%;
+		filter: blur(10px);
+	}
+}
+
+/* Optimize for mobile */
+@media (max-width: 768px) {
+	.map-controls {
+		font-size: 0.875rem;
+	}
+}
+
+/* Dark mode optimizations for OLED displays */
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #000000;
+	}
+}
+
+/* Performance: GPU acceleration for transforms */
+.gpu-accelerated {
+	transform: translateZ(0);
+	will-change: transform;
+}
