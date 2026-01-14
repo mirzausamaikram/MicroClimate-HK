@@ -5,9 +5,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![Python](https://img.shields.io/badge/Python-3.11+-green.svg)](https://www.python.org/)
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8.svg)](https://golang.org/)
-[![SvelteKit](https://img.shields.io/badge/SvelteKit-Latest-FF3E00.svg)](https://kit.svelte.dev/)
+[![Python](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org/)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-2.0-FF3E00.svg)](https://kit.svelte.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-00A651.svg)](https://fastapi.tiangolo.com/)
+[![Status](https://img.shields.io/badge/Status-Stable-brightgreen.svg)](#deployment)
 
 ---
 
